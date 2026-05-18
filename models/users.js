@@ -20,6 +20,21 @@ const userSchema = mongoose.Schema({
         type: String,
         enum:["student","mentor","alumni"],
         default:"student"
+    },
+    bio:{
+        type:String,
+        default:""
+    },
+    course:{
+        type:String,
+        default:""
+    },
+    graduationYear:{
+        type:Number,
+    },
+    profilePicture:{
+        type:String,
+        default:""
     }
 },
 {

@@ -48,7 +48,7 @@ const loginMember = async (req,res) => {
         }
 
         const token = jwt.sign({id: existingMember._id, email: existingMember.email}, process.env.JWT_SECRET,{expiresIn:"1d"})
-        res.status(200).json({message:"Login Successful"})
+        res.status(200).json({message:"Login Successful",result:existingMember, token})
     } catch (error) {
         res.status(500).json({message:"Error while signing in the User", error:error.message})
     }

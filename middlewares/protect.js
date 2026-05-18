@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const auth = (req,res,next) => {
+const protect = (req,res,next) => {
     try {
        const token = req.headers.authorization.split(" ")[1];
        if(!token) {
@@ -14,9 +14,10 @@ const auth = (req,res,next) => {
        req.userId = decodedData.id;
 
        next();
+       
     } catch (error) {
         res.status(401).json({message:"Unauthorised access, invalid token", error:error.message})
     }
 }
 
-module.exports = auth;
+module.exports = protect;
