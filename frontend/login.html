@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="register">
+        <form id="loginForm" onsubmit="login(event)"> 
+            <h1>LOG IN</h1>
+            <!-- <label for="name">
+                <input type="text" id="loginname" placeholder="Name">
+                <span>Name</span>
+            </label> -->
+
+            <label for="email">
+                <input type="text" id="login-email" placeholder="Email">
+                <span>Email</span>
+            </label>
+
+            <label for="password">
+                <input type="text" id="login-password" placeholder="Password">
+                <span>Password</span>
+            </label>
+            <button  type="submit">Register</button>
+        </form>
+        <p id="loginMessage"></p>
+    </div>
+    <script src="login.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
