@@ -1,10 +1,10 @@
-const User = require('../models/users');
+const profile = require('../models/profile');
 
 //FETCHING USER PROFILE
 const getProfile =async (req, res) => {
     const id = req.params.id
     try {
-        const user = await User.findOne(id).select("-password");
+        const user = await profile.findOne(id).select("-password");
 
         if(!user){
             return res.status(404).json({message:"User not found"})
@@ -20,7 +20,7 @@ const updateProfile = async (req, res) => {
     const id = req.params.id;
     try {
         const {bio,course,graduationYear} = req.body;
-         const user = await User.findOne(id);
+         const user = await profile.findOne(id);
          if(!user){
             return res.status(404).json({message:"User not found"});
          }

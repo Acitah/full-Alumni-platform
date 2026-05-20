@@ -8,13 +8,14 @@ const cors = require('cors');
 
 require('dotenv').config();
 
+const userRouter = require('./routers/users')
+const messageRouter = require("./routers/message");
+const notificationRouter = require("./routers/notification");
 
 
 const app = express();
-
 app.use(express.json())
 
-const userRouter = require('./routers/users')
 const corsOptions = {
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
@@ -23,7 +24,17 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+//user routes
 app.use('/users', userRouter);
+
+//message routes
+
+app.use("/messages", messageRouter);
+
+//notification routes
+app.use("/notifications", notificationRouter);
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`My server is running at http://localhost:${PORT}`);

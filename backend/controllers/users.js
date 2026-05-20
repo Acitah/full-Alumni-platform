@@ -4,28 +4,29 @@ const bcrypt = require('bcryptjs')
 
 //REGISTRATION
 const registerMember = async (req, res) => {
-    const {email, name, password, confirmPassword} = req.body;
 
     try {
+         const {email, name, password, confirmPassword} = req.body;
         console.log(req.body)
         const existingMember = await User.findOne({email});
         if(existingMember){
-            return res.status(204).json({message:"Member exists"})
+            return res.status(409).json({message:"Account already exists"})
         }
         if(password !== confirmPassword){
-            return res.status(201).json({message:"Passwords do not match"});
+            return res.status(400).json({message:"Passwords do not match"});
         }
 
         const hashedPassword = await bcrypt.hash(password,12);
         const newMember = new User({
             email,
             name: name,
-            password: hashedPassword
+            password: hashedPassword,
+            confirmPassword: hashedPassword,
         })
         await newMember.save();
 
         const token = jwt.sign({id: newMember._id, email: newMember.email}, process.env.JWT_SECRET,{expiresIn:"1h"})
-        res.status(200).json({message:"Member created successfully", result: newMember, token})
+        res.status(201).json({message:"Account created successfully", result: newMember, token})
     } catch (error) {
         console.log(error)
         res.status(500).json({message:"Error while creating account", error:error.message})
@@ -34,19 +35,19 @@ const registerMember = async (req, res) => {
 
 //LOGIN
 const loginMember = async (req,res) => {
-    const {email, password} = req.body;
 
     try {
+        const {email, password} = req.body;
         console.log(req.body)
         const existingMember = await User.findOne({email});
 
         if(!existingMember){
-            return res.status(204).json({message:"Account does not exist, please register"})
+            return res.status(404).json({message:"Account does not exist, please register"})
         }
         const isPasswordCorrect = await bcrypt.compare(password, existingMember.password);
         
         if(!isPasswordCorrect){
-            return res.status(201).json({message:"Password is incorrect"})
+            return res.status(401).json({message:"Password is incorrect"})
         }
 
         const token = jwt.sign({id: existingMember._id, email: existingMember.email}, process.env.JWT_SECRET,{expiresIn:"1d"})
