@@ -15,6 +15,7 @@ const app = express();
 app.use(express.json())
 
 const userRouter = require('./routers/users')
+const eventRouter = require('./routers/events')
 const corsOptions = {
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
@@ -24,6 +25,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use('/users', userRouter);
+app.use('/events', eventRouter);
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`My server is running at http://localhost:${PORT}`);

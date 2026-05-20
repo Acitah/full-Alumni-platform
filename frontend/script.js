@@ -84,3 +84,76 @@ async function login(e){
         alert(error.message);
     }
 }
+//EVENTS
+
+
+document.getElementById("createBtn")
+.addEventListener("click", createEvent);
+
+// CREATE EVENT
+async function createEvent() {
+
+  const token = localStorage.getItem("token");
+
+  const title = document.getElementById("title").value;
+  const desc = document.getElementById("desc").value;
+  const date = document.getElementById("date").value;
+  const location = document.getElementById("location").value;
+
+  const res = await fetch(`${API_BASE}/events`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      title,
+      description: desc,
+      date,
+      location
+    })
+  });
+
+  const data = await res.json();
+  console.log("CREATE EVENT RESPONSE:", data);
+
+  if (!res.ok) {
+    alert(data.message);
+    return;
+  }
+
+  alert("Event created!");
+  loadEvents();
+}
+
+// GET EVENTS
+async function loadEvents() {
+
+  try {
+        const res = await fetch(`${API_BASE}/events`);
+  const data = await res.json();
+
+  const container = document.getElementById("eventsContainer");
+  container.innerHTML = "";
+
+  data.result.forEach(event => {
+
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+      <h3>${event.title}</h3>
+      <p>${event.description}</p>
+      <p><b>Date:</b> ${new Date(event.date).toDateString()}</p>
+      <p><b>Location:</b> ${event.location}</p>
+      <hr>
+    `;
+
+    container.appendChild(div);
+  });
+}
+   catch (error) {
+     console.error("Load events error:", error);
+  }
+}
+// load on page start
+// loadEvents();
