@@ -35,6 +35,14 @@ const userSchema = mongoose.Schema({
     profilePicture:{
         type:String,
         default:""
+    },
+    company:{
+        type:String,
+        default:""
+    },
+    position:{
+        type:String,
+        default:""
     }
 },
 {

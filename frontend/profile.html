@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="profile.css" />
+  </head>
+  <body>
+    <div class="profile-container">
+      <!-- LEFT CONTAINER -->
+      <div class="profile-card">
+        <div class="cover-photo"></div>
+        <div class="profile-image-wrapper">
+          <img src="prof.jfif" alt="" id="profileImage" />
+        </div>
+        <div class="profile-info">
+          <h2 id="displayName">Loading....</h2>
+          <p id="displayEmail"></p>
+          <p id="displayBio">No bio added yet</p>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div class="edit-section">
+        <h2>Edit Profile</h2>
+        <form action="" id="profileForm">
+          <input type="text" id="name" placeholder="Full Name" />
+
+          <input type="email" id="email" placeholder="Email" />
+
+          <textarea id="bio" placeholder="Write your Bio..."></textarea>
+
+          <input type="text" id="course" placeholder="Course /  Program" />
+
+          <input type="text" id="graduationYear" placeholder="graduationYear" />
+
+          <input type="text" id="position" placeholder="Position" />
+
+          <input type="text" id="company" placeholder="Company" />
+
+          <button type="submit">Update Profile</button>
+        </form>
+      </div>
+    </div>
+    <script src="profile.js"></script>
+  </body>
+</html>

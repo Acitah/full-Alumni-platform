@@ -1,0 +1,87 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+body{
+    background: #f4f7fb;
+    padding: 40px;
+}
+.profile-container{
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+.profile-card{
+    width: 350px;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.cover-photo{
+    height: 120px;
+    background: #4f46e5;
+}
+.profile-image-wrapper{
+    display: flex;
+    justify-content: center;
+    margin-top: -60px;
+}
+.profile-image-wrapper img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 5px solid white;
+    object-fit: cover;
+}
+.profile-info{
+    padding: 20px;
+    text-align: center;
+}
+.profile-info h2{
+    margin-bottom: 10px;
+}
+.profile-info p{
+    margin-bottom: 10px;
+    color: #555;
+}
+.edit-section{
+    flex: 1;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.edit-section h2{
+    margin-bottom: 20px;
+}
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+input, textarea{
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+textarea{
+    height:100px;
+    resize: none;
+}
+button{
+    background: #4f46e5;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+
+}
+button:hover{
+    background: #4338ca;
+}

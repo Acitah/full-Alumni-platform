@@ -19,19 +19,33 @@ const getProfile =async (req, res) => {
 const updateProfile = async (req, res) => {
     const id = req.params.id;
     try {
-        const {bio,course,graduationYear} = req.body;
-         const user = await User.findOne(id);
+        console.log("BODY:", req.body);
+
+    console.log("USER:", req.params);
+
+        const { email, name, bio, course, graduationYear, company, position } = req.body;
+
+         const user = await User.findOneAndUpdate({email:email},
+             
+                {
+        name: req.body.name,
+        email: req.body.email,
+        bio: req.body.bio,
+        course: req.body.course,
+        graduationYear: req.body.graduationYear,
+        company: req.body.company,
+        position: req.body.position
+      },
+      {
+         new: true,
+        runValidators: true
+      }
+         );
          if(!user){
-            return res.status(404).json({message:"User not found"});
+            return res.status(404).json({message:"User not found"})
          }
-
-            user.bio = bio || user.bio;
-            user.course = course || user.course;
-            user.graduationYear = graduationYear || user.graduationYear;
-            await user.save();
-            res.status(200).json({message:"Profile updated successfully", user})
+         res.status(200).json({message:"Profile Updated successfully", result: user})
          
-
     } catch (error) {
         res.status(500).json({
             message:"Error while updating User Profile", error:error.message
