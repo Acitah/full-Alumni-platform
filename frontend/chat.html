@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="chats-container"> 
+    <!-- Header -->
+
+    <div class="chat">
+       <button type="button" id="chat-btn"><a href="messages.html"></a></button>
+        <div>
+            <span>Online</span>
+        </div>
+
+    </div>
+
+    <div class="chats-list"> 
+   
+     <a href="profile.html" class="chat-item"> 
+        <div>
+            <img src="images/pride.jpeg" alt="">
+        </div>
+         <h4>Username</h4>
+
+     </a>
+
+
+     <div class="chat-area">
+        <ul id="chats"></ul>
+     </div> <span class="time">2m</span> <br>
+        
+        <div class="chat-info">
+            <input type="text" id="chat-input" placeholder="Type message....">
+            <button id="send-btn">Send</button>
+        </div>     
+      
+
+    </div>
+
+    </div>
+
+
+
+    <script src="chat.js"></script>
+</body>
+</html>
