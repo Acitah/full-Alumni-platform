@@ -16,6 +16,8 @@ const notificationRouter = require("./routers/notification");
 const app = express();
 app.use(express.json())
 
+const userRouter = require('./routers/users')
+const eventRouter = require('./routers/events')
 const corsOptions = {
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
@@ -27,6 +29,7 @@ app.use(cors(corsOptions));
 
 //user routes
 app.use('/users', userRouter);
+app.use('/events', eventRouter);
 
 //message routes
 
