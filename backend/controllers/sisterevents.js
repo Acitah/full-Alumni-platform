@@ -1,5 +1,5 @@
 // controllers/sisterEvent.js
-const SisterEvent = require('../models/sisterEvent');
+const SisterEvent = require('../models/sisterhood');
 const User = require('../models/users');
 
 // Create Event
