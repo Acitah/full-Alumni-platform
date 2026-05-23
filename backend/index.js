@@ -8,16 +8,11 @@ const cors = require('cors');
 
 require('dotenv').config();
 
-// const userRouter = require('./routers/users')
-// const messageRouter = require("./routers/message");
-// const notificationRouter = require("./routers/notification");
-
 const userRouter = require('./routers/users')
-const eventsRouter = require('./routers/events')
+// const eventsRouter = require('./routers/events')
 const messageRouter = require("./routers/message");
 const notificationRouter = require("./routers/notification");
 const profileRouter = require("./routers/profile");
-const uploadRouter = require("./routers/upload");
 const mentorshipRouter = require("./routers/mentorship");
 const opportunityRouter = require("./routers/opportunity");
 const leadershipRouter = require("./routers/leadership");
@@ -44,7 +39,8 @@ app.use(cors(corsOptions));
 
 //user routes
 app.use('/users', userRouter);
-app.use('/events', eventRouter);
+
+// app.use('/events', eventsRouter);
 
 //message routes
 
@@ -57,7 +53,7 @@ app.use("/notifications", notificationRouter);
 app.use("/profile", profileRouter);
 
 //upload routes
-app.use("/upload", uploadRouter);
+// app.use("/upload", uploadRouter);
 
 //mentorship routes
 app.use("/mentorship", mentorshipRouter);

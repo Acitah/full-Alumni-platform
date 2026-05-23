@@ -1,44 +1,59 @@
-// Initiative Incubator
-const initiativeSchema = mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  pitchedBy: { type: ObjectId, ref: 'User', required: true },
-  votes: [{ type: ObjectId, ref: 'User' }],
-  voteCount: { type: Number, default: 0 },
-  status: {
-    type: String,
-    enum: ['pitched', 'approved', 'rejected', 'active'],
-    default: 'pitched'
-  },
-  karmaCost: { type: Number, default: 20 }
-}, { timestamps: true });
+const mongoose = require("mongoose");
 
-// Community Council Elections
-const electionSchema = mongoose.Schema({
-  candidate: { type: ObjectId, ref: 'User', required: true },
-  role: { type: String, required: true }, // Head of Mentorship etc
-  cohort: { type: Number },
-  votes: [{ type: ObjectId, ref: 'User' }],
-  voteCount: { type: Number, default: 0 },
-  isActive: { type: Boolean, default: true },
-  karmaPerVote: { type: Number, default: 2 }
-}, { timestamps: true });
-
-// Special Interest Guilds
-const guildSchema = mongoose.Schema({
-  name: { type: String, required: true },
-  description: { type: String },
-  members: [{ type: ObjectId, ref: 'User' }],
-  leader: { type: ObjectId, ref: 'User' },
-  category: {
-    type: String,
-    enum: ['frontend', 'backend', 'data', 'design', 'career', 'other']
+// Guild Schema Update (add `featured` to your existing guild model)
+const guildSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    description: { type: String, trim: true },
+    category: { type: String },
+    leader: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    memberCount: { type: Number, default: 0 },
+    featured: { type: Boolean, default: false }, // NEW
   },
-  memberCount: { type: Number, default: 0 }
-}, { timestamps: true });
+  { timestamps: true },
+);
+
+const Guild = mongoose.model("Guild", guildSchema);
+
+// Council Schema
+const councilSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    description: { type: String, trim: true },
+    category: { type: String },
+
+    steward: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    nominatedSteward: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    nominatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    memberCount: { type: Number, default: 0 },
+    isActive: { type: Boolean, default: true },
+
+    nominationOpen: { type: Boolean, default: false },
+    nominationPeriod: {
+      quarter: { type: String },
+      opensAt: { type: Date },
+      closesAt: { type: Date },
+    },
+  },
+  { timestamps: true },
+);
 
 module.exports = {
-  Initiative: mongoose.model('Initiative', initiativeSchema),
-  Election: mongoose.model('Election', electionSchema),
-  Guild: mongoose.model('Guild', guildSchema)
+  Council: mongoose.model("Council", councilSchema),
+  Guild: mongoose.model("Guild", guildSchema),
 };

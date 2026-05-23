@@ -15,15 +15,15 @@ router.get('/mentors', protect, getAllMentors);
 router.patch('/mentors/profile', protect, updateMentorProfile);
 router.patch('/mentors/availability', protect, toggleAvailability);
 
-// Booking routes
-router.post('/bookings', protect, bookMentor);
-router.get('/bookings/my', protect, getMyBookings);
-router.patch('/bookings/:bookingId', protect, updateBookingStatus);
+// // Booking routes
+// router.post('/bookings', protect, bookMentor);
+// router.get('/bookings/my', protect, getMyBookings);
+// router.patch('/bookings/:bookingId', protect, updateBookingStatus);
 
-// Quickfire routes
-router.post('/quickfire', protect, postQuestion);
-router.get('/quickfire', protect, getAllQuestions);
-router.post('/quickfire/:questionId/answer', protect, answerQuestion);
-router.patch('/quickfire/:questionId/resolve', protect, resolveQuestion);
+// // Quickfire routes
+// router.post('/quickfire', protect, postQuestion);
+// router.get('/quickfire', protect, getAllQuestions);
+// router.post('/quickfire/:questionId/answer', protect, answerQuestion);
+// router.patch('/quickfire/:questionId/resolve', protect, resolveQuestion);
 
 module.exports = router;

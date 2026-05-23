@@ -5,7 +5,7 @@ const createEvent = async (req, res) => {
   try {
     const event = await Event.create({
       ...req.body,
-      createdBy: req.user.id
+      createdBy: req.user.id,
     });
 
     res.status(201).json(event);
@@ -24,7 +24,5 @@ const getEvents = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
-
 
 module.exports = { createEvent, getEvents };

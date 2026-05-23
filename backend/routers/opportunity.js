@@ -7,12 +7,12 @@ const { postOpportunity, getAllOpportunities,
 
 const router = express.Router();
 
-router.post('/opportunities', protect, postOpportunity);
-router.get('/opportunities', protect, getAllOpportunities);
-router.get('/opportunities/:opportunityId', protect, getOpportunity);
-router.post('/opportunities/:opportunityId/apply', protect, applyOpportunity);
-router.get('/applications/my', protect, getMyApplications);
-router.patch('/applications/:applicationId', protect, updateApplicationStatus);
-router.delete('/opportunities/:opportunityId', protect, deleteOpportunity);
+router.post('/', protect, postOpportunity);
+router.get('/', protect, getAllOpportunities);
+router.get('/my', protect, getMyApplications);
+router.get('/:opportunityId', protect, getOpportunity);
+router.post('/:opportunityId/apply', protect, applyOpportunity);
+router.patch('/:applicationId', protect, updateApplicationStatus);
+router.delete('/:opportunityId', protect, deleteOpportunity);
 
 module.exports = router;

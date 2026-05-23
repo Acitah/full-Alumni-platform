@@ -1,314 +1,272 @@
+const { Guild, Council } = require("../models/leadership");
+const User = require("../models/users");
 
-const Guild = require('../models/leadership');
-// const Initiative = require('../models/initiative');
-// const Election = require('../models/election');
-const User = require('../models/users');
+// Councils
 
-// ── GUILDS ──
-
-// Create Guild
-const createGuild = async (req, res) => {
+// Create council
+const createCouncil = async (req, res) => {
   try {
     const { name, description, category } = req.body;
 
-    const guild = await Guild.create({
+    const council = await Council.create({
       name,
       description,
       category,
-      leader: req.senderId,
-      members: [req.senderId],
-      memberCount: 1
+      steward: req.user.id,
+      members: [req.user.id],
+      memberCount: 1,
     });
 
     res.status(201).json({
-      message: 'Guild created successfully',
-      data: guild
+      message: "Council created successfully",
+      data: council,
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
-// Get All Guilds
-const getAllGuilds = async (req, res) => {
+// Get All Councils
+const getAllCouncils = async (req, res) => {
   try {
-    const guilds = await Guild.find()
-      .populate('leader', 'name avatar')
-      .populate('members', 'name avatar cohort')
+    const guilds = await Council.find()
+      .populate("steward", "name avatar")
+      .populate("members", "name avatar cohort")
       .sort({ memberCount: -1 });
 
     res.status(200).json({ data: guilds });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
-// Join Guild
-const joinGuild = async (req, res) => {
+// Get Active Council Count (Village Pulse widget)
+const getActiveCouncilCount = async (req, res) => {
   try {
-    const guild = await Guild.findById(req.params.guildId);
+    const count = await Council.countDocuments({ isActive: true });
 
-    if (!guild) {
-      return res.status(404).json({ message: 'Guild not found' });
+    res.status(200).json({ activeCouncils: count });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Join Council
+const joinCouncil = async (req, res) => {
+  try {
+    const council = await Council.findById(req.params.councilId);
+
+    if (!council) {
+      return res.status(404).json({ message: "Council not found" });
     }
 
-    // Check if already a member
-    if (guild.members.includes(req.senderId)) {
+    if (council.members.includes(req.user.id)) {
       return res.status(400).json({
-        message: 'You are already a member of this guild'
+        message: "You are already a member of this council",
       });
     }
 
-    guild.members.push(req.senderId);
-    guild.memberCount += 1;
-    await guild.save();
+    council.members.push(req.user.id);
+    council.memberCount += 1;
+    await council.save();
 
     res.status(200).json({
-      message: 'Joined guild successfully',
-      data: guild
+      message: "Joined council successfully",
+      data: council,
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
-// Leave Guild
-const leaveGuild = async (req, res) => {
+// Leave Council
+const leaveCouncil = async (req, res) => {
   try {
-    const guild = await Guild.findById(req.params.guildId);
+    const council = await Council.findById(req.params.councilId);
 
-    if (!guild) {
-      return res.status(404).json({ message: 'Guild not found' });
+    if (!council) {
+      return res.status(404).json({ message: "Council not found" });
     }
 
-    // Leader cannot leave
-    if (guild.leader.toString() === req.senderId) {
+    if (council.steward.toString() === req.user.id) {
       return res.status(400).json({
-        message: 'Leader cannot leave — transfer leadership first'
+        message: "Steward cannot leave — transfer stewardship first",
       });
     }
 
-    guild.members = guild.members.filter(
-      id => id.toString() !== req.senderId
+    council.members = council.members.filter(
+      (id) => id.toString() !== req.user.id,
     );
-    guild.memberCount -= 1;
-    await guild.save();
+    council.memberCount -= 1;
+    await council.save();
 
-    res.status(200).json({ message: 'Left guild successfully' });
-
+    res.status(200).json({ message: "Left council successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
-// Delete Guild
-const deleteGuild = async (req, res) => {
+// Nominate Steward (nominate another member, not yourself)
+const nominateSteward = async (req, res) => {
   try {
-    const guild = await Guild.findById(req.params.guildId);
+    const { nomineeId } = req.body;
+    const council = await Council.findById(req.params.councilId);
 
-    if (!guild) {
-      return res.status(404).json({ message: 'Guild not found' });
+    if (!council) {
+      return res.status(404).json({ message: "Council not found" });
     }
 
-    if (guild.leader.toString() !== req.senderId) {
-      return res.status(403).json({ message: 'Not authorized' });
-    }
-
-    await Guild.findByIdAndDelete(req.params.guildId);
-
-    res.status(200).json({ message: 'Guild deleted successfully' });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-// ── INITIATIVES ──
-
-// Pitch Initiative
-const pitchInitiative = async (req, res) => {
-  try {
-    const user = await User.findById(req.senderId);
-
-    // Check karma
-    if (user.karma < 20) {
+    if (!council.nominationOpen) {
       return res.status(400).json({
-        message: 'Not enough karma to pitch an idea'
+        message: "Steward nominations are not currently open",
       });
     }
 
-    const initiative = await Initiative.create({
-      title: req.body.title,
-      description: req.body.description,
-      pitchedBy: req.senderId,
-      karmaCost: 20
-    });
-
-    // Deduct karma
-    await User.findByIdAndUpdate(req.senderId,
-      { $inc: { karma: -20 } }
-    );
-
-    res.status(201).json({
-      message: 'Initiative pitched! -20 Karma',
-      data: initiative
-    });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-// Get All Initiatives
-const getAllInitiatives = async (req, res) => {
-  try {
-    const initiatives = await Initiative.find()
-      .populate('pitchedBy', 'name avatar cohort')
-      .sort({ voteCount: -1 });
-
-    res.status(200).json({ data: initiatives });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-// Vote on Initiative
-const voteInitiative = async (req, res) => {
-  try {
-    const initiative = await Initiative.findById(
-      req.params.initiativeId
-    );
-
-    if (!initiative) {
-      return res.status(404).json({ message: 'Initiative not found' });
+    if (council.nominationPeriod?.closesAt) {
+      const now = new Date();
+      if (now > council.nominationPeriod.closesAt) {
+        return res.status(400).json({
+          message: `${council.nominationPeriod.quarter} nominations have closed`,
+        });
+      }
     }
 
-    // Check already voted
-    if (initiative.votes.includes(req.senderId)) {
-      return res.status(400).json({
-        message: 'Already voted on this initiative'
+    if (!council.members.includes(req.user.id)) {
+      return res.status(403).json({
+        message: "Only council members can nominate a steward",
       });
     }
 
-    initiative.votes.push(req.senderId);
-    initiative.voteCount += 1;
-
-    // Auto approve if enough votes
-    if (initiative.voteCount >= 10) {
-      initiative.status = 'approved';
+    if (nomineeId === req.user.id) {
+      return res.status(400).json({
+        message: "You cannot nominate yourself as steward",
+      });
     }
 
-    await initiative.save();
+    if (!council.members.includes(nomineeId)) {
+      return res.status(400).json({
+        message: "Nominee must be a member of this council",
+      });
+    }
+    council.nominatedSteward = nomineeId;
+    council.nominatedBy = req.user.id;
+    await council.save();
 
     res.status(200).json({
-      message: 'Vote cast!',
-      voteCount: initiative.voteCount,
-      status: initiative.status
+      message: "Steward nominated successfully",
+      data: council,
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
-// ── ELECTIONS ──
-
-// Run for Election
-const runForElection = async (req, res) => {
+// Open Nominations (steward action)
+const openNominations = async (req, res) => {
   try {
-    const { role } = req.body;
+    const { quarter, opensAt, closesAt } = req.body;
+    const council = await Council.findById(req.params.councilId);
 
-    // Check if already running
-    const alreadyRunning = await Election.findOne({
-      candidate: req.senderId,
-      isActive: true
-    });
-
-    if (alreadyRunning) {
-      return res.status(400).json({
-        message: 'You are already running for an election'
-      });
+    if (!council) {
+      return res.status(404).json({ message: "Council not found" });
     }
 
-    const election = await Election.create({
-      candidate: req.senderId,
-      role,
-      isActive: true
-    });
-
-    res.status(201).json({
-      message: 'You are now running for election!',
-      data: election
-    });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-// Get All Elections
-const getAllElections = async (req, res) => {
-  try {
-    const elections = await Election.find({ isActive: true })
-      .populate('candidate', 'name avatar cohort')
-      .sort({ voteCount: -1 });
-
-    res.status(200).json({ data: elections });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-// Vote in Election
-const voteElection = async (req, res) => {
-  try {
-    const election = await Election.findById(req.params.electionId);
-
-    if (!election) {
-      return res.status(404).json({ message: 'Election not found' });
+    if (council.steward.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized" });
     }
 
-    // Can't vote for yourself
-    if (election.candidate.toString() === req.senderId) {
-      return res.status(400).json({
-        message: 'You cannot vote for yourself'
-      });
-    }
-
-    // Check already voted
-    if (election.votes.includes(req.senderId)) {
-      return res.status(400).json({
-        message: 'Already voted in this election'
-      });
-    }
-
-    election.votes.push(req.senderId);
-    election.voteCount += 1;
-    await election.save();
-
-    // Reward karma for voting
-    await User.findByIdAndUpdate(req.senderId,
-      { $inc: { karma: 2 } }
-    );
+    council.nominationOpen = true;
+    council.nominationPeriod = {
+      quarter,
+      opensAt: opensAt ? new Date(opensAt) : new Date(),
+      closesAt: closesAt ? new Date(closesAt) : null,
+    };
+    await council.save();
 
     res.status(200).json({
-      message: 'Vote cast! +2 Karma',
-      voteCount: election.voteCount
+      message: `${quarter} steward nominations are now open`,
+      data: council,
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
+
+// Confirm Nominated Steward (transfer stewardship)
+const confirmSteward = async (req, res) => {
+  try {
+    const council = await Council.findById(req.params.councilId);
+
+    if (!council) {
+      return res.status(404).json({ message: "Council not found" });
+    }
+
+    if (!council.nominatedSteward) {
+      return res.status(400).json({ message: "No pending steward nomination" });
+    }
+
+    if (council.steward.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    council.steward = council.nominatedSteward;
+    council.nominatedSteward = null;
+    council.nominatedBy = null;
+    council.nominationOpen = false;
+    await council.save();
+
+    res.status(200).json({
+      message: "Stewardship transferred successfully",
+      data: council,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Delete Council (steward only)
+const deleteCouncil = async (req, res) => {
+  try {
+    const council = await Council.findById(req.params.councilId);
+
+    if (!council) {
+      return res.status(404).json({ message: "Council not found" });
+    }
+
+    if (council.steward.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    await Council.findByIdAndDelete(req.params.councilId);
+
+    res.status(200).json({ message: "Council deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get featured guilds for homepage
+const getFeaturedGuilds = async (req, res) => {
+  try {
+    const featuredGuilds = await Guild.find({ featured: true })
+      .populate("steward", "name avatar")
+      .populate("members", "name avatar cohort");
+
+    res.status(200).json({ data: featuredGuilds });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
-  createGuild, getAllGuilds, joinGuild,
-  leaveGuild, deleteGuild,
-  pitchInitiative, getAllInitiatives, voteInitiative,
-  runForElection, getAllElections, voteElection
+  createCouncil,
+  getAllCouncils,
+  joinCouncil,
+  getActiveCouncilCount,
+  leaveCouncil,
+  deleteCouncil,
+  getFeaturedGuilds,
+  nominateSteward,
+  openNominations,
+  confirmSteward,
 };

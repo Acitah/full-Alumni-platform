@@ -1,43 +1,45 @@
-const mongoose = require('mongoose');
-const { timeStamp } = require('node:console');
+const mongoose = require("mongoose");
+const { timeStamp } = require("node:console");
 
-const profileSchema = mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
-        trim: true
+const profileSchema = mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    email:{
-        type:String,
-        required:true,
-        unique: true
+    email: {
+      type: String,
+      required: true,
+      unique: true,
     },
-    password:{
-        type:String,
-        required:true
+    password: {
+      type: String,
+      required: true,
     },
-    role:{
-        type: String,
-        enum:["student","mentor","alumni"],
-        default:"student"
+    role: {
+      type: String,
+      enum: ["student", "mentor", "alumni"],
+      default: "student",
     },
-    bio:{
-        type:String,
-        default:""
+    bio: {
+      type: String,
+      default: "",
     },
-    course:{
-        type:String,
-        default:""
+    course: {
+      type: String,
+      default: "",
     },
-    graduationYear:{
-        type:Number,
+    graduationYear: {
+      type: Number,
     },
-    profilePicture:{
-        type:String,
-        default:""
-    }
-},
-{
-    timestamps:true
-})
+    profilePicture: {
+      type: String,
+      default: "",
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 module.exports = mongoose.model("Profile", profileSchema);

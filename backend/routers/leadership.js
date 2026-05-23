@@ -1,29 +1,25 @@
 
 const express = require('express')
 const protect = require('../middlewares/protect');
-const { createGuild, getAllGuilds, joinGuild,
-  leaveGuild, deleteGuild,
-  pitchInitiative, getAllInitiatives, voteInitiative,
-  runForElection, getAllElections, voteElection } = require('../controllers/leadership');
+const { createCouncil, getAllCouncils, joinCouncil, getActiveCouncilCount,
+  leaveCouncil, deleteCouncil, getFeaturedGuilds,
+ nominateSteward, openNominations, confirmSteward } = require('../controllers/leadership');
 
 const router = express.Router();
 
-
-// Guild routes
-router.post('/guilds', protect, createGuild);
-router.get('/guilds', protect, getAllGuilds);
-router.patch('/guilds/:guildId/join', protect, joinGuild);
-router.patch('/guilds/:guildId/leave', protect, leaveGuild);
-router.delete('/guilds/:guildId', protect, deleteGuild);
-
-// Initiative routes
-router.post('/initiatives', protect, pitchInitiative);
-router.get('/initiatives', protect, getAllInitiatives);
-router.patch('/initiatives/:initiativeId/vote', protect, voteInitiative);
-
-// Election routes
-router.post('/elections', protect, runForElection);
-router.get('/elections', protect, getAllElections);
-router.patch('/elections/:electionId/vote', protect, voteElection);
+// Guild route
+router.get('/guilds/featured', getFeaturedGuilds);
+ 
+// Council routes
+router.get('/councils', getAllCouncils);
+router.get('/councils/pulse', getActiveCouncilCount);
+router.post('/councils', protect, createCouncil);
+router.post('/councils/:councilId/join', protect, joinCouncil);
+router.post('/councils/:councilId/leave', protect, leaveCouncil);
+router.post('/councils/:councilId/nominate', protect, nominateSteward);
+router.post('/councils/:councilId/open-nominations', protect, openNominations);            //done
+router.post('/councils/:councilId/confirm-steward',  protect, confirmSteward);
+router.delete('/councils/:councilId', protect, deleteCouncil);
+ 
 
 module.exports = router;
